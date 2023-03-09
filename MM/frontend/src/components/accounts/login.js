@@ -26,7 +26,7 @@ function Copyright(props) {
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
       <Link color="inherit" href="https://github.com/otmanLAHRECHE">
-         Labo_SysApp EPSP_labo V1.0 
+         DMM EPSP_DJ V1.4 
       </Link>{' '}-- created by otman LAHRECHE 
       {'.'}
     </Typography>
@@ -42,14 +42,10 @@ export default function SignInSide() {
 
 
   const [loginError, setLoginError] = React.useState(false);
-
-  const [userData, setUserData] = React.useState([]);
-  const [allUsers, setAllUsers] = React.useState([]);
   
-  const [user, setUser] = React.useState(null);
+  const [user, setUser] = React.useState("");
   const [password, setPassword] = React.useState("");
 
-  const [passwordState, setPasswordState] = React.useState(false);
 
 
 
@@ -59,18 +55,6 @@ export default function SignInSide() {
 
   const [open, setOpen] = React.useState(false);
 
-  React.useEffect( () =>{
-
-    const fetchUsersData = async() =>{
-      setUserData(await getAllUsersForLogin());
-    }
-    fetchUsersData();
-  },[])
-
-  React.useEffect( () =>{
-    setAllUsers(userData);
-  },[userData]);
-
 
   const handleSubmit = async () => {
 
@@ -79,7 +63,7 @@ export default function SignInSide() {
     setUserNameError([false,""]);
     setPasswordError([false,""]);
 
-    if (user == null){
+    if (user == ""){
       setUserNameError([true, "Chapm est obligatoire"]);
       setLoginError(true);
       test = false;
@@ -100,14 +84,8 @@ export default function SignInSide() {
 
 
   React.useEffect( () =>{
-
-    const save_user_type = async() =>{
-      await localStorage.setItem("user_type", user.label);
-    }
-
    if(response =="logged"){
     setOpen(true);
-    save_user_type();
     setTimeout(()=>{
       console.log("timeout....")
       setLoged(true);
@@ -124,7 +102,6 @@ export default function SignInSide() {
 
 
   if (localStorage.getItem("auth_token") && loged == true) {
-    console.log(user.label);
     return <Navigate to="/"/>;
   }else{
   return (
@@ -147,19 +124,23 @@ export default function SignInSide() {
             DMM login
           </Typography>
           <Box component="form" noValidate sx={{ mt: 1 }}>
-                    <Autocomplete
-                                    disablePortal
-                                    id="user_id"
-                                    value={user}
-                                    onChange={(event, newVlue) =>{
-                                      setUser(newVlue);
-                                    }}
-                                    options={allUsers}
-                                    sx={{ width: 300 }}
-                                    renderInput={(params) => <TextField {...params} error={userNameError[0]}
-                                    helperText={userNameError[1]} fullWidth variant="standard" label="Utilisateur" 
-                                    required/>}
-                                    /> 
+                    
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              variant="standard"
+              value={user}
+              label="Utilisateur"
+              id="user_id"
+              autoComplete="current-password"
+              error={userNameError[0]}
+              helperText={userNameError[1]}
+              onChange={(event, newVlue) =>{
+                setUser(newVlue);
+              }}
+            />
+            
             <TextField
               margin="normal"
               required
