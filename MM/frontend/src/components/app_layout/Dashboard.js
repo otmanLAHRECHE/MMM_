@@ -27,10 +27,19 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContentText from '@mui/material/DialogContentText';
 import Slide from '@mui/material/Slide';
-import BiotechIcon from '@mui/icons-material/Biotech';
 import {Navigate} from 'react-router-dom';
+import HomeRepairServiceIcon from '@mui/icons-material/HomeRepairService';
 
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import ContentPasteGoIcon from '@mui/icons-material/ContentPasteGo';
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+import OutputIcon from '@mui/icons-material/Output';
+import BuildIcon from '@mui/icons-material/Build';
+import ContactMailIcon from '@mui/icons-material/ContactMail';
+import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
+import FaxIcon from '@mui/icons-material/Fax';
+import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
+import ContactEmergencyIcon from '@mui/icons-material/ContactEmergency';
 
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -103,7 +112,7 @@ function DashboardContent() {
 
   const [toolBar,setToolBar] = React.useState("Tableau de bord");
 
-  const [page, setPage] = React.useState([true,false,false,false]);
+  const [page, setPage] = React.useState([true,false,false,false,false,false,false,false,false,false,false]);
 
   const [logOut, setLogOut] = React.useState(false);
 
@@ -116,7 +125,6 @@ function DashboardContent() {
 
   const LogOutConfirmation = async () =>{
     await localStorage.removeItem("auth_token");
-    await localStorage.removeItem("user_type");
     setLogOut(true);
   }
   
@@ -128,23 +136,65 @@ function DashboardContent() {
 
   const clickDashboard = () =>{
     
-    setPage([true,false,false,false])
+    setPage([true,false,false,false,false,false,false,false,false,false,false])
     setToolBar("Tableau de bord")
   };
-  const clickTests = () =>{
+  const clickMaterials = () =>{
       
-    setPage([false,true,false,false])
-    setToolBar("Examens")
+    setPage([false,true,false,false,false,false,false,false,false,false,false])
+    setToolBar("Matériels")
   };
-  const clickStatestiques = () =>{
+  const clickAffectation = () =>{
       
-    setPage([false,false,true,false])
-    setToolBar("Statestiques")
+    setPage([false,false,true,false,false,false,false,false,false,false,false])
+    setToolBar("Affectation")
   };
-  const clickSettings = () =>{
+  const clickEnPanne = () =>{
       
-    setPage([false,false,false,true])
-    setToolBar("Options")
+    setPage([false,false,false,true,false,false,false,false,false,false,false])
+    setToolBar("En Panne")
+  };
+
+  const clickReform = () =>{
+      
+    setPage([false,false,false,false,true,false,false,false,false,false,false])
+    setToolBar("Réforme")
+  };
+
+  const clickReparation = () =>{
+      
+    setPage([false,false,false,false,false,true,false,false,false,false,false])
+    setToolBar("Reparation")
+  };
+
+  const clickFamille = () =>{
+      
+    setPage([false,false,false,false,false,false,true,false,false,false,false])
+    setToolBar("Familles d'équipements")
+  };
+
+  const clickDesignation = () =>{
+      
+    setPage([false,false,false,false,false,false,false,true,false,false,false])
+    setToolBar("Type d'équipements")
+  };
+
+  const clickFournisseur = () =>{
+      
+    setPage([false,false,false,false,false,false,false,false,true,false,false])
+    setToolBar("Fournisseurs")
+  };
+
+  const clickService = () =>{
+      
+    setPage([false,false,false,false,false,false,false,false,false,true,false])
+    setToolBar("Services d'affectation")
+  };
+
+  const clickUsers= () =>{
+      
+    setPage([false,false,false,false,false,false,false,false,false,false,true])
+    setToolBar("Users")
   };
 
   
@@ -227,17 +277,35 @@ function DashboardContent() {
                   </ListItemIcon>
                   <ListItemText primary="Tableau de bord"/>
                 </ListItemButton>
-                <ListItemButton selected={page[1]} onClick={clickTests}>
+                <ListItemButton selected={page[1]} onClick={clickMaterials}>
                   <ListItemIcon>
-                    <BiotechIcon />
+                    <HomeRepairServiceIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Examens médicaux" />
+                  <ListItemText primary="Matériels" />
                 </ListItemButton>
-                <ListItemButton selected={page[2]} onClick={clickStatestiques}>
+                <ListItemButton selected={page[2]} onClick={clickAffectation}>
                   <ListItemIcon>
-                    <InsertChartOutlinedTwoToneIcon />
+                    <ContentPasteGoIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Statestiques" />
+                  <ListItemText primary="Affectations" />
+                </ListItemButton>
+                <ListItemButton selected={page[3]} onClick={clickEnPanne}>
+                  <ListItemIcon>
+                    <ReportProblemIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="En Panne" />
+                </ListItemButton>
+                <ListItemButton selected={page[4]} onClick={clickReform}>
+                  <ListItemIcon>
+                    <OutputIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Réforme" />
+                </ListItemButton>
+                <ListItemButton selected={page[5]} onClick={clickReparation}>
+                  <ListItemIcon>
+                    <BuildIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Reparation" />
                 </ListItemButton>
 
                 <Divider sx={{ my: 1 }} />
@@ -245,11 +313,39 @@ function DashboardContent() {
                       Autre options
                     </ListSubheader>
 
-                <ListItemButton selected={page[3]} onClick={clickSettings}>
+                <ListItemButton selected={page[6]} onClick={clickFamille}>
                   <ListItemIcon>
-                    <SettingsOutlinedIcon />
+                    <AutoAwesomeMotionIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Options" />
+                  <ListItemText primary="Familles d'équipements" />
+                </ListItemButton>
+
+                <ListItemButton selected={page[7]} onClick={clickDesignation}>
+                  <ListItemIcon>
+                    <MonitorHeartIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Type d'équipements" />
+                </ListItemButton>
+
+                <ListItemButton selected={page[8]} onClick={clickFournisseur}>
+                  <ListItemIcon>
+                    <FaxIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="fourniseurs" />
+                </ListItemButton>
+
+                <ListItemButton selected={page[9]} onClick={clickService}>
+                  <ListItemIcon>
+                    <ContactEmergencyIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Services d'affectation" />
+                </ListItemButton>
+
+                <ListItemButton selected={page[10]} onClick={clickUsers}>
+                  <ListItemIcon>
+                    <ContactMailIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Utilisateurs" />
                 </ListItemButton>
              
           </List>

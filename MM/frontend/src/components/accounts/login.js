@@ -26,7 +26,7 @@ function Copyright(props) {
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
       <Link color="inherit" href="https://github.com/otmanLAHRECHE">
-         DMM EPSP_DJ V1.4 
+         DMM_App V1.4 
       </Link>{' '}-- created by otman LAHRECHE 
       {'.'}
     </Typography>
@@ -121,7 +121,7 @@ export default function SignInSide() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            DMM login
+            MMM_App login
           </Typography>
           <Box component="form" noValidate sx={{ mt: 1 }}>
                     
