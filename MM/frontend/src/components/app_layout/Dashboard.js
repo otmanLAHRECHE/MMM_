@@ -235,7 +235,7 @@ function DashboardContent() {
               {toolBar}
             </Typography>
 
-            <Button color="inherit" startIcon={<ThreePRoundedIcon />}>Reception</Button>
+            <Button color="inherit" startIcon={<ThreePRoundedIcon />}>DMM_User</Button>
             <FiberManualRecordIcon
                 fontSize="small"
                   sx={{
@@ -369,6 +369,13 @@ function DashboardContent() {
         {page[1] ? <Tests/> : null}
         {page[2] ? <Dashboard_details/> : null}
         {page[3] ? <Dashboard_details/> : null}
+        {page[4] ? <Dashboard_details/> : null}
+        {page[5] ? <Tests/> : null}
+        {page[6] ? <Dashboard_details/> : null}
+        {page[7] ? <Dashboard_details/> : null}
+        {page[8] ? <Dashboard_details/> : null}
+        {page[9] ? <Dashboard_details/> : null}
+        {page[10] ? <Dashboard_details/> : null}
         
 
         

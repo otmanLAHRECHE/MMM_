@@ -75,7 +75,7 @@ export default function SignInSide() {
         }
 
         if(test){
-          setResponse(await login_api(user.label, password.toString()));
+          setResponse(await login_api(user.toString(), password.toString()));
         }
     }
 
@@ -136,8 +136,8 @@ export default function SignInSide() {
               autoComplete="current-password"
               error={userNameError[0]}
               helperText={userNameError[1]}
-              onChange={(event, newVlue) =>{
-                setUser(newVlue);
+              onChange={(event) =>{
+                setUser(event.target.value);
               }}
             />
             
