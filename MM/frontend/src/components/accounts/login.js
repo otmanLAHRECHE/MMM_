@@ -67,16 +67,16 @@ export default function SignInSide() {
       setUserNameError([true, "Chapm est obligatoire"]);
       setLoginError(true);
       test = false;
-    }else{
-        if(password == null || password == ""){
-          setPasswordError([true, "Chapm est obligatoire"]);
-          setLoginError(true);
-          test = false;
-        }
+    }
 
-        if(test){
-          setResponse(await login_api(user.toString(), password.toString()));
-        }
+    if(password == null || password == ""){
+      setPasswordError([true, "Chapm est obligatoire"]);
+      setLoginError(true);
+      test = false;
+    }
+
+    if(test){
+      setResponse(await login_api(user.toString(), password.toString()));
     }
 
   };
@@ -133,7 +133,6 @@ export default function SignInSide() {
               value={user}
               label="Utilisateur"
               id="user_id"
-              autoComplete="current-password"
               error={userNameError[0]}
               helperText={userNameError[1]}
               onChange={(event) =>{
@@ -151,7 +150,6 @@ export default function SignInSide() {
               label="Password"
               type="password"
               id="password"
-              autoComplete="current-password"
               error={passwordError[0]}
               helperText={passwordError[1]}
               onChange={(event) => {setPassword(event.target.value)}}
