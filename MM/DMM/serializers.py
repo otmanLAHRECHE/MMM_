@@ -71,7 +71,7 @@ class MaterielSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Materiel
-        fields = ['id', 'materiel_type', 'marque', 'date_acquisition', 'fournisseur', 'service_affectation', 'state']
+        fields = ['id', 'materiel_type', 'marque', 'date_acquisition', 'fournisseur', 'service_affectation', 'state', 'num_inv']
 
 
 class ReformeSerializer(serializers.ModelSerializer):

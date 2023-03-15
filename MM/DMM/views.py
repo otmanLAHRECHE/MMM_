@@ -403,35 +403,36 @@ def getAffectations(request):
         return Response(status=status.HTTP_401_UNAUTHORIZED) 
 
 @api_view(['POST'])
-def createMaterial(request):
+def createAffectation(request):
     if request.method == 'POST' and request.user.is_authenticated:
-        material_type_id = request.data.pop('material_type_id')
-        marque = request.data.pop('marque')
-        date_acq = request.data.pop('date_acq')
-        fournisseur_id = request.data.pop('fournisseur')
-        service_affectation_id = request.data.pop('service_affectation')
-        state = "good"
+        materiel_id = request.data.pop('materiel_id')
+        note = request.data.pop('note')
+        date_aff = request.data.pop('date_aff')
+        service_aff_id = request.data.pop('service_aff_id')
 
-        date_acquisition = date_acq.split("/")
+        date_affectation = date_aff.split("/")
 
-        d_arr = date_acquisition[0]
-        m_arr = date_acquisition[1]
+        d_arr = date_affectation[0]
+        m_arr = date_affectation[1]
 
         if d_arr[0] == '0':
             d_arr.replace('0','',1)
         if m_arr[0] == '0':
             m_arr.replace('0','',1)
 
-        date_acquisition[0] = d_arr
-        date_acquisition[1] = m_arr
+        date_affectation[0] = d_arr
+        date_affectation[1] = m_arr
 
-        date_acquisition = datetime.date(int(date_acquisition[2]), int(date_acquisition[1]), int(date_acquisition[0]))
+        date_affectation = datetime.date(int(date_affectation[2]), int(date_affectation[1]), int(date_affectation[0]))
 
-        material_type = MaterielType.objects.get(id= material_type_id)
-        fournisseur = Fournisseur.objects.get(id= fournisseur_id)
-        service_affectation = ServiceAffectation.objects.get(id= service_affectation_id)
+        materiel = Materiel.objects.get(id= materiel_id)
+        service_aff = Fournisseur.objects.get(id= service_aff_id)
+        if materiel.service_affectation == service_aff :
+            return Response(status=status.HTTP_201_CREATED, data = {"status":"same service affectation"})
+        
+        
 
-        source = Materiel.objects.create(materiel_type=material_type, marque=marque, date_acquisition=date_acquisition, fournisseur=fournisseur, service_affectation=service_affectation, state=state)
+        source = Affectation.objects.create(materiel_type=material_type, marque=marque, date_acquisition=date_acquisition, fournisseur=fournisseur, service_affectation=service_affectation, state=state)
 
         if source.id is not None:
             return Response(status=status.HTTP_201_CREATED, data = {"status":"material created"})
@@ -439,7 +440,7 @@ def createMaterial(request):
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])
-def updateMaterial(request, id):
+def updateAffectation(request, id):
     if request.method == 'POST' and request.user.is_authenticated:
         material_type_id = request.data.pop('material_type_id')
         marque = request.data.pop('marque')
@@ -483,7 +484,7 @@ def updateMaterial(request, id):
         return Response(status=status.HTTP_200_OK, data = {"status":"material updated"})
     
 @api_view(['DELETE'])
-def deleteMaterial(request, id):
+def deleteAffectation(request, id):
     if request.method == 'DELETE' and request.user.is_authenticated:
         Materiel.objects.filter(id=id).delete()
         return Response(status=status.HTTP_200_OK, data = {"status":"material deleted"})

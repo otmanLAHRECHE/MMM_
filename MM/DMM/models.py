@@ -43,6 +43,7 @@ class Materiel(models.Model):
     id = models.AutoField(primary_key=True)
     materiel_type = models.ForeignKey(MaterielType, on_delete=models.CASCADE)
     marque = models.CharField(max_length=100)
+    num_inv = models.CharField(max_length=100)
     date_acquisition = models.DateField()
     fournisseur = models.ForeignKey(Fournisseur, on_delete=models.CASCADE)
     service_affectation = models.ForeignKey(ServiceAffectation, on_delete=models.CASCADE)
