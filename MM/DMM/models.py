@@ -15,6 +15,7 @@ class Fournisseur(models.Model):
     id = models.AutoField(primary_key=True)
     company_name = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=100)
+    adress = models.CharField(max_length=100)
     email = models.CharField(max_length=100)
 
     def __str__(self):

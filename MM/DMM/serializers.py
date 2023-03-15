@@ -23,7 +23,7 @@ class FournisseurSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Fournisseur
-        fields = ['id', 'company_name', 'phone_number', 'email']
+        fields = ['id', 'company_name', 'phone_number', 'adress', 'email']
 
 
 class FournisseurListSerializer(serializers.ModelSerializer):
@@ -72,4 +72,34 @@ class MaterielSerializer(serializers.ModelSerializer):
     class Meta:
         model = Materiel
         fields = ['id', 'materiel_type', 'marque', 'date_acquisition', 'fournisseur', 'service_affectation', 'state']
+
+
+class ReformeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Reforme
+        fields = ['id', 'date_reforme', 'materiel', 'note']
+
+
+
+class ReparationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Reparation
+        fields = ['id', 'date_reparation', 'materiel', 'reparateur', 'note']
+
+
+class AffectationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Affectation
+        fields = ['id', 'date_affectation', 'service_aff', 'materiel', 'note']
+
+
+
+class EnPanneSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = EnPanne
+        fields = ['id', 'date_panne', 'materiel', 'note']
 
