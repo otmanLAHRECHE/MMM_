@@ -426,68 +426,58 @@ def createAffectation(request):
         date_affectation = datetime.date(int(date_affectation[2]), int(date_affectation[1]), int(date_affectation[0]))
 
         materiel = Materiel.objects.get(id= materiel_id)
-        service_aff = Fournisseur.objects.get(id= service_aff_id)
+        service_aff = ServiceAffectation.objects.get(id= service_aff_id)
         if materiel.service_affectation == service_aff :
-            return Response(status=status.HTTP_201_CREATED, data = {"status":"same service affectation"})
-        
-        
-
-        source = Affectation.objects.create(materiel_type=material_type, marque=marque, date_acquisition=date_acquisition, fournisseur=fournisseur, service_affectation=service_affectation, state=state)
-
-        if source.id is not None:
-            return Response(status=status.HTTP_201_CREATED, data = {"status":"material created"})
+            return Response(status=status.HTTP_303_SEE_OTHER, data = {"status":"same service affectation"})
         else:
-            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            source = Affectation.objects.create(date_affectation=date_affectation, service_aff=service_aff, materiel=materiel, note=note)
+
+            if source.id is not None:
+                return Response(status=status.HTTP_201_CREATED, data = {"status":"affectation history created"})
+            else:
+                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])
 def updateAffectation(request, id):
     if request.method == 'POST' and request.user.is_authenticated:
-        material_type_id = request.data.pop('material_type_id')
-        marque = request.data.pop('marque')
-        date_acq = request.data.pop('date_acq')
-        fournisseur_id = request.data.pop('fournisseur')
-        service_affectation_id = request.data.pop('service_affectation')
+        note = request.data.pop('note')
+        date_aff = request.data.pop('date_aff')
+        service_aff_id = request.data.pop('service_aff_id')
 
-        date_acquisition = date_acq.split("/")
+        date_affectation = date_aff.split("/")
 
-        d_arr = date_acquisition[0]
-        m_arr = date_acquisition[1]
+        d_arr = date_affectation[0]
+        m_arr = date_affectation[1]
 
         if d_arr[0] == '0':
             d_arr.replace('0','',1)
         if m_arr[0] == '0':
             m_arr.replace('0','',1)
 
-        date_acquisition[0] = d_arr
-        date_acquisition[1] = m_arr
+        date_affectation[0] = d_arr
+        date_affectation[1] = m_arr
 
-        date_acquisition = datetime.date(int(date_acquisition[2]), int(date_acquisition[1]), int(date_acquisition[0]))
+        date_affectation = datetime.date(int(date_affectation[2]), int(date_affectation[1]), int(date_affectation[0]))
 
-        material_type = MaterielType.objects.get(id= material_type_id)
-        fournisseur = Fournisseur.objects.get(id= fournisseur_id)
-        service_affectation = ServiceAffectation.objects.get(id= service_affectation_id)
+        service_aff = ServiceAffectation.objects.get(id= service_aff_id)
 
-        material_to_update = Materiel.objects.get(id=id)
-        if not material_to_update.materiel_type == material_type:
-            material_to_update.materiel_type = material_type
-        if not material_to_update.fournisseur == fournisseur:
-            material_to_update.fournisseur = fournisseur
-        if not material_to_update.service_affectation == service_affectation:
-            material_to_update.service_affectation = service_affectation
-        if not material_to_update.marque == marque:
-            material_to_update.marque = marque
-        if not material_to_update.date_acquisition == date_acquisition:
-            material_to_update.date_acquisition = date_acquisition
+        affectation_to_update = Affectation.objects.get(id=id)
+        if not affectation_to_update.service_aff == service_aff:
+            affectation_to_update.service_aff = service_aff
+        if not affectation_to_update.date_affectation == date_affectation:
+            affectation_to_update.date_affectation = date_affectation
+        if not affectation_to_update.note == note:
+            affectation_to_update.note = note
         
-        material_to_update.save()
+        affectation_to_update.save()
         
-        return Response(status=status.HTTP_200_OK, data = {"status":"material updated"})
+        return Response(status=status.HTTP_200_OK, data = {"status":"affectation history updated"})
     
 @api_view(['DELETE'])
 def deleteAffectation(request, id):
     if request.method == 'DELETE' and request.user.is_authenticated:
-        Materiel.objects.filter(id=id).delete()
-        return Response(status=status.HTTP_200_OK, data = {"status":"material deleted"})
+        Affectation.objects.filter(id=id).delete()
+        return Response(status=status.HTTP_200_OK, data = {"status":"affectation history deleted"})
 
 
 
@@ -496,7 +486,7 @@ def deleteAffectation(request, id):
 
 
 
-
+#panne
 
 @api_view(['GET'])
 def getEnPanne(request):
@@ -511,6 +501,84 @@ def getEnPanne(request):
     else :
         return Response(status=status.HTTP_401_UNAUTHORIZED) 
     
+@api_view(['POST'])
+def createEnPanne(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+        materiel_id = request.data.pop('materiel_id')
+        note = request.data.pop('note')
+        date_pan = request.data.pop('date_pan')
+
+        date_panne = date_pan.split("/")
+
+        d_arr = date_panne[0]
+        m_arr = date_panne[1]
+
+        if d_arr[0] == '0':
+            d_arr.replace('0','',1)
+        if m_arr[0] == '0':
+            m_arr.replace('0','',1)
+
+        date_panne[0] = d_arr
+        date_panne[1] = m_arr
+
+        date_panne = datetime.date(int(date_panne[2]), int(date_panne[1]), int(date_panne[0]))
+
+        materiel = Materiel.objects.get(id= materiel_id)
+        if not materiel.state == "good" :
+            return Response(status=status.HTTP_303_SEE_OTHER, data = {"status":"this materiel is already en panne"})
+        else:
+            source = EnPanne.objects.create(date_panne=date_panne, materiel=materiel, note=note)
+
+            materiel.state = "panne"
+            materiel.save()
+
+            if source.id is not None:
+                return Response(status=status.HTTP_201_CREATED, data = {"status":"panne history created"})
+            else:
+                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+def updateEnPanne(request, id):
+    if request.method == 'POST' and request.user.is_authenticated:
+        note = request.data.pop('note')
+        date_pan = request.data.pop('date_pan')
+
+        date_panne = date_pan.split("/")
+
+        d_arr = date_panne[0]
+        m_arr = date_panne[1]
+
+        if d_arr[0] == '0':
+            d_arr.replace('0','',1)
+        if m_arr[0] == '0':
+            m_arr.replace('0','',1)
+
+        date_panne[0] = d_arr
+        date_panne[1] = m_arr
+
+        date_panne = datetime.date(int(date_panne[2]), int(date_panne[1]), int(date_panne[0]))
+
+        panne_to_update = EnPanne.objects.get(id=id)
+        if not panne_to_update.date_panne == date_panne:
+            panne_to_update.date_panne = date_panne
+        if not panne_to_update.note == note:
+            panne_to_update.note = note
+        
+        panne_to_update.save()
+        
+        return Response(status=status.HTTP_200_OK, data = {"status":"panne history updated"})
+    
+@api_view(['DELETE'])
+def deleteEnPanne(request, id):
+    if request.method == 'DELETE' and request.user.is_authenticated:
+        EnPanne.objects.filter(id=id).delete()
+        return Response(status=status.HTTP_200_OK, data = {"status":"panne history deleted"})
+
+
+
+
+
+#reparation
 
 @api_view(['GET'])
 def getReparation(request):
@@ -525,6 +593,92 @@ def getReparation(request):
     else :
         return Response(status=status.HTTP_401_UNAUTHORIZED) 
     
+@api_view(['POST'])
+def createReparation(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+        materiel_id = request.data.pop('materiel_id')
+        note = request.data.pop('note')
+        date_rep = request.data.pop('date_pan')
+        reparateur_id = request.data.pop('reparateur_id')
+
+        date_reparation = date_rep.split("/")
+
+        d_arr = date_reparation[0]
+        m_arr = date_reparation[1]
+
+        if d_arr[0] == '0':
+            d_arr.replace('0','',1)
+        if m_arr[0] == '0':
+            m_arr.replace('0','',1)
+
+        date_reparation[0] = d_arr
+        date_reparation[1] = m_arr
+
+        date_reparation = datetime.date(int(date_reparation[2]), int(date_reparation[1]), int(date_reparation[0]))
+
+        reparateur = Fournisseur.objects.get(id= reparateur_id)
+        materiel = Materiel.objects.get(id= materiel_id)
+        if materiel.state == "repair":
+            return Response(status=status.HTTP_303_SEE_OTHER, data = {"status":"this materiel is already in reparation"})
+        else:
+            source = Reparation.objects.create(date_reparation=date_reparation, materiel=materiel, reparateur=reparateur, note=note)
+
+            materiel.state = "repair"
+            materiel.save()
+
+            if source.id is not None:
+                return Response(status=status.HTTP_201_CREATED, data = {"status":"reparation history created"})
+            else:
+                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+def updateReparation(request, id):
+    if request.method == 'POST' and request.user.is_authenticated:
+        note = request.data.pop('note')
+        date_rep = request.data.pop('date_pan')
+        reparateur_id = request.data.pop('reparateur_id')
+
+        date_reparation = date_rep.split("/")
+
+        d_arr = date_reparation[0]
+        m_arr = date_reparation[1]
+
+        if d_arr[0] == '0':
+            d_arr.replace('0','',1)
+        if m_arr[0] == '0':
+            m_arr.replace('0','',1)
+
+        date_reparation[0] = d_arr
+        date_reparation[1] = m_arr
+
+        date_reparation = datetime.date(int(date_reparation[2]), int(date_reparation[1]), int(date_reparation[0]))
+
+        reparateur = Fournisseur.objects.get(id= id)
+
+        reparation_to_update = Reparation.objects.get(id=id)
+        if not reparation_to_update.date_reparation == date_reparation:
+            reparation_to_update.date_reparation = date_reparation
+        if not reparation_to_update.note == note:
+            reparation_to_update.note = note
+        if not reparation_to_update.reparateur == reparateur:
+            reparation_to_update.reparateur = reparateur
+        
+        reparation_to_update.save()
+        
+        return Response(status=status.HTTP_200_OK, data = {"status":"reparation history updated"})
+    
+@api_view(['DELETE'])
+def deleteReparation(request, id):
+    if request.method == 'DELETE' and request.user.is_authenticated:
+        Reparation.objects.filter(id=id).delete()
+        return Response(status=status.HTTP_200_OK, data = {"status":"reparation history deleted"})
+
+
+
+
+
+
+#réforme
 
 @api_view(['GET'])
 def getReforme(request):
@@ -539,5 +693,78 @@ def getReforme(request):
     else :
         return Response(status=status.HTTP_401_UNAUTHORIZED) 
     
+@api_view(['POST'])
+def createReforme(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+        materiel_id = request.data.pop('materiel_id')
+        note = request.data.pop('note')
+        date_ref = request.data.pop('date_pan')
+
+        date_reforme = date_ref.split("/")
+
+        d_arr = date_reforme[0]
+        m_arr = date_reforme[1]
+
+        if d_arr[0] == '0':
+            d_arr.replace('0','',1)
+        if m_arr[0] == '0':
+            m_arr.replace('0','',1)
+
+        date_reforme[0] = d_arr
+        date_reforme[1] = m_arr
+
+        date_reforme = datetime.date(int(date_reforme[2]), int(date_reforme[1]), int(date_reforme[0]))
+
+        materiel = Materiel.objects.get(id= materiel_id)
+        if materiel.state == "reforme":
+            return Response(status=status.HTTP_303_SEE_OTHER, data = {"status":"this materiel is already in reforme"})
+        else:
+            source = Reparation.objects.create(date_reforme=date_reforme, materiel=materiel, note=note)
+
+            materiel.state = "reforme"
+            materiel.save()
+
+            if source.id is not None:
+                return Response(status=status.HTTP_201_CREATED, data = {"status":"reforme history created"})
+            else:
+                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+def updateReforme(request, id):
+    if request.method == 'POST' and request.user.is_authenticated:
+        note = request.data.pop('note')
+        date_ref = request.data.pop('date_pan')
+
+        date_reforme = date_ref.split("/")
+
+        d_arr = date_reforme[0]
+        m_arr = date_reforme[1]
+
+        if d_arr[0] == '0':
+            d_arr.replace('0','',1)
+        if m_arr[0] == '0':
+            m_arr.replace('0','',1)
+
+        date_reforme[0] = d_arr
+        date_reforme[1] = m_arr
+
+        date_reforme = datetime.date(int(date_reforme[2]), int(date_reforme[1]), int(date_reforme[0]))
+
+        reforme_to_update = Reforme.objects.get(id=id)
+        if not reforme_to_update.date_reforme == date_reforme:
+            reforme_to_update.date_reforme = date_reforme
+        if not reforme_to_update.note == note:
+            reforme_to_update.note = note
+        
+        reforme_to_update.save()
+        
+        return Response(status=status.HTTP_200_OK, data = {"status":"reforme history updated"})
+    
+@api_view(['DELETE'])
+def deleteReforme(request, id):
+    if request.method == 'DELETE' and request.user.is_authenticated:
+        Reforme.objects.filter(id=id).delete()
+        return Response(status=status.HTTP_200_OK, data = {"status":"reforme history deleted"})
+
 
 
