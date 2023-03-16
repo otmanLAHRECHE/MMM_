@@ -44,6 +44,19 @@ def getServiceAffectationForSelection(request):
     else :
         return Response(status=status.HTTP_401_UNAUTHORIZED) 
 
+@api_view(['GET'])
+def getSelectedServiceAffectation(request, id):
+    if request.method == 'GET' and request.user.is_authenticated:
+        queryset = ServiceAffectation.objects.get(id=id)
+
+        source_serial = ServiceAffectationSerializer(queryset)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+                
+    
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED)  
+ 
 @api_view(['POST'])
 def createServiceAffectation(request):
     if request.method == 'POST' and request.user.is_authenticated:
@@ -109,7 +122,19 @@ def getFournisseurForSelection(request):
         
     else :
         return Response(status=status.HTTP_401_UNAUTHORIZED) 
-    
+
+@api_view(['GET'])
+def getSelectedFournisseurs(request, id):
+    if request.method == 'GET' and request.user.is_authenticated:
+        queryset = Fournisseur.objects.get(id=id)
+
+        source_serial = FournisseurSerializer(queryset)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+        
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED) 
+   
 @api_view(['POST'])
 def createFournisseur(request):
     if request.method == 'POST' and request.user.is_authenticated:
@@ -184,6 +209,18 @@ def getFamillesForSelection(request):
     else :
         return Response(status=status.HTTP_401_UNAUTHORIZED) 
 
+@api_view(['GET'])
+def getSelectedFamille(request, id):
+    if request.method == 'GET' and request.user.is_authenticated:
+        queryset = Famille.objects.get(id= id)
+
+        source_serial = FamilleSerializer(queryset)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+        
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED) 
+
 @api_view(['POST'])
 def createFamille(request):
     if request.method == 'POST' and request.user.is_authenticated:
@@ -245,7 +282,20 @@ def getMaterielTypeForSelection(request):
         
     else :
         return Response(status=status.HTTP_401_UNAUTHORIZED) 
-    
+
+@api_view(['GET'])
+def getSelectedMaterielType(request, id):
+    if request.method == 'GET' and request.user.is_authenticated:
+        queryset = MaterielType.objects.get(id=id)
+        print(queryset)
+
+        source_serial = MaterielTypeSerializer(queryset)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+        
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED) 
+  
 @api_view(['POST'])
 def createMaterialType(request):
     if request.method == 'POST' and request.user.is_authenticated:
@@ -289,8 +339,7 @@ def deleteMaterialType(request, id):
 @api_view(['GET'])
 def getMateriels(request):
     if request.method == 'GET' and request.user.is_authenticated:
-        queryset = Materiel.objects.all()
-        print(queryset)
+        queryset = Materiel.objects.all().order_by('-date_acquisition')
 
         source_serial = MaterielSerializer(queryset, many=True)
 
@@ -334,6 +383,19 @@ def createMaterial(request):
             return Response(status=status.HTTP_201_CREATED, data = {"status":"material created"})
         else:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def getSelectedMateriels(request, id):
+    if request.method == 'GET' and request.user.is_authenticated:
+        queryset = Materiel.objects.get(id=id)
+        print(queryset)
+
+        source_serial = MaterielSerializer(queryset)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+        
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED) 
 
 @api_view(['POST'])
 def updateMaterial(request, id):
@@ -390,12 +452,30 @@ def deleteMaterial(request, id):
 #affectations
 
 @api_view(['GET'])  
-def getAffectations(request):
+def getAffectations(request, year):
     if request.method == 'GET' and request.user.is_authenticated:
-        queryset = Affectation.objects.all()
-        print(queryset)
+
+        range = monthrange(year, 12)
+
+        date_start = datetime.date(year , 1, 1)
+        date_end = datetime.date(year, 12, range[1])
+
+        queryset = Affectation.objects.filter(date_affectation__gte=date_start, date_affectation__lte=date_end)
 
         source_serial = AffectationSerializer(queryset, many=True)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+        
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED) 
+
+@api_view(['GET'])  
+def getSelectedAffectations(request, id):
+    if request.method == 'GET' and request.user.is_authenticated:
+        queryset = Affectation.objects.get(id=id)
+        print(queryset)
+
+        source_serial = AffectationSerializer(queryset)
 
         return Response(status=status.HTTP_200_OK,data=source_serial.data)
         
@@ -489,10 +569,15 @@ def deleteAffectation(request, id):
 #panne
 
 @api_view(['GET'])
-def getEnPanne(request):
+def getEnPanne(request, year):
     if request.method == 'GET' and request.user.is_authenticated:
-        queryset = EnPanne.objects.all()
-        print(queryset)
+
+        range = monthrange(year, 12)
+
+        date_start = datetime.date(year , 1, 1)
+        date_end = datetime.date(year, 12, range[1])
+
+        queryset = EnPanne.objects.filter(date_panne__gte=date_start, date_panne__lte=date_end)
 
         source_serial = EnPanneSerializer(queryset, many=True)
 
@@ -500,7 +585,19 @@ def getEnPanne(request):
         
     else :
         return Response(status=status.HTTP_401_UNAUTHORIZED) 
-    
+
+@api_view(['GET'])
+def getSelectedEnPanne(request, id):
+    if request.method == 'GET' and request.user.is_authenticated:
+        queryset = EnPanne.objects.get(id=id)
+
+        source_serial = EnPanneSerializer(queryset)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+        
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED) 
+  
 @api_view(['POST'])
 def createEnPanne(request):
     if request.method == 'POST' and request.user.is_authenticated:
@@ -581,10 +678,15 @@ def deleteEnPanne(request, id):
 #reparation
 
 @api_view(['GET'])
-def getReparation(request):
+def getReparation(request, year):
     if request.method == 'GET' and request.user.is_authenticated:
-        queryset = Reparation.objects.all()
-        print(queryset)
+
+        range = monthrange(year, 12)
+
+        date_start = datetime.date(year , 1, 1)
+        date_end = datetime.date(year, 12, range[1])
+
+        queryset = Reparation.objects.filter(date_reparation__gte=date_start, date_reparation__lte=date_end)
 
         source_serial = ReparationSerializer(queryset, many=True)
 
@@ -592,7 +694,19 @@ def getReparation(request):
         
     else :
         return Response(status=status.HTTP_401_UNAUTHORIZED) 
-    
+
+@api_view(['GET'])
+def getSelectedReparation(request, id):
+    if request.method == 'GET' and request.user.is_authenticated:
+        queryset = Reparation.objects.get(id=id)
+
+        source_serial = ReparationSerializer(queryset)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+        
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED) 
+ 
 @api_view(['POST'])
 def createReparation(request):
     if request.method == 'POST' and request.user.is_authenticated:
@@ -681,10 +795,15 @@ def deleteReparation(request, id):
 #réforme
 
 @api_view(['GET'])
-def getReforme(request):
+def getReforme(request, year):
     if request.method == 'GET' and request.user.is_authenticated:
-        queryset = Reforme.objects.all()
-        print(queryset)
+
+        range = monthrange(year, 12)
+
+        date_start = datetime.date(year , 1, 1)
+        date_end = datetime.date(year, 12, range[1])
+
+        queryset = Reforme.objects.filter(date_reforme__gte=date_start, date_reforme__lte=date_end)
 
         source_serial = ReformeSerializer(queryset, many=True)
 
@@ -692,7 +811,19 @@ def getReforme(request):
         
     else :
         return Response(status=status.HTTP_401_UNAUTHORIZED) 
-    
+
+@api_view(['GET'])
+def getSelectedReforme(request, id):
+    if request.method == 'GET' and request.user.is_authenticated:
+        queryset = Reforme.objects.get(id=id)
+
+        source_serial = ReformeSerializer(queryset)
+
+        return Response(status=status.HTTP_200_OK,data=source_serial.data)
+        
+    else :
+        return Response(status=status.HTTP_401_UNAUTHORIZED) 
+
 @api_view(['POST'])
 def createReforme(request):
     if request.method == 'POST' and request.user.is_authenticated:
