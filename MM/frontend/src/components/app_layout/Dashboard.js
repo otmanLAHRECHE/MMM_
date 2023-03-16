@@ -45,7 +45,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Dashboard_details from './Dashboard-details';
-import Tests from './Tests';
+import Fournisseur from './Fournisseur';
 
 
 
@@ -331,7 +331,7 @@ function DashboardContent() {
                   <ListItemIcon>
                     <FaxIcon />
                   </ListItemIcon>
-                  <ListItemText primary="fourniseurs" />
+                  <ListItemText primary="Fourniseurs" />
                 </ListItemButton>
 
                 <ListItemButton selected={page[9]} onClick={clickService}>
@@ -366,14 +366,14 @@ function DashboardContent() {
 
         
         {page[0] ? <Dashboard_details/> : null}
-        {page[1] ? <Tests/> : null}
+        {page[1] ? <Dashboard_details/> : null}
         {page[2] ? <Dashboard_details/> : null}
         {page[3] ? <Dashboard_details/> : null}
         {page[4] ? <Dashboard_details/> : null}
-        {page[5] ? <Tests/> : null}
+        {page[5] ? <Dashboard_details/> : null}
         {page[6] ? <Dashboard_details/> : null}
         {page[7] ? <Dashboard_details/> : null}
-        {page[8] ? <Dashboard_details/> : null}
+        {page[8] ? <Fournisseur/> : null}
         {page[9] ? <Dashboard_details/> : null}
         {page[10] ? <Dashboard_details/> : null}
         
