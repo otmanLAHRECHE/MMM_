@@ -68,7 +68,7 @@ urlpatterns = [
     #reforme
     path('api/get_all_reforme/<int:year>', views.getReforme),
     path('api/get_selected_reforme/<int:id>', views.getSelectedReforme),
-    path('api/create_reforme/', views.createReforme),
+    path('api//', views.createReforme),
     path('api/ubdate_reforme/<int:id>', views.updateReforme),
     path('api/delete_reforme/<int:id>', views.deleteReforme),
 
