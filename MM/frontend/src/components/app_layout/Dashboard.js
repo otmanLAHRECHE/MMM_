@@ -46,6 +46,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Dashboard_details from './Dashboard-details';
 import Fournisseur from './Fournisseur';
+import ServiceAffectation from './ServiceAffectaion';
 
 
 
@@ -374,7 +375,7 @@ function DashboardContent() {
         {page[6] ? <Dashboard_details/> : null}
         {page[7] ? <Dashboard_details/> : null}
         {page[8] ? <Fournisseur/> : null}
-        {page[9] ? <Dashboard_details/> : null}
+        {page[9] ? <ServiceAffectation/> : null}
         {page[10] ? <Dashboard_details/> : null}
         
 
