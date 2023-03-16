@@ -47,6 +47,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import Dashboard_details from './Dashboard-details';
 import Fournisseur from './Fournisseur';
 import ServiceAffectation from './ServiceAffectaion';
+import Famille from './Famille';
 
 
 
@@ -372,7 +373,7 @@ function DashboardContent() {
         {page[3] ? <Dashboard_details/> : null}
         {page[4] ? <Dashboard_details/> : null}
         {page[5] ? <Dashboard_details/> : null}
-        {page[6] ? <Dashboard_details/> : null}
+        {page[6] ? <Famille/> : null}
         {page[7] ? <Dashboard_details/> : null}
         {page[8] ? <Fournisseur/> : null}
         {page[9] ? <ServiceAffectation/> : null}
