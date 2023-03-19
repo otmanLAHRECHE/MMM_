@@ -38,27 +38,34 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
   const columns = [
     { field: 'id', headerName: 'Id', width: 70 },
-    { field: 'service', headerName: 'Service', width: 180 },
-    { field: 'type', headerName: 'Type de service', width: 150 },
-];
+    { field: 'designation', headerName: 'Designation', width: 180 },
+    { field: 'famille', headerName: 'Famille', width: 150 , valueGetter: (params) =>
+    `${params.row.famille.famille_name || ''}` },
+  ];
 
 
 
 
-export default function ServiceAffectation(){
+export default function TypeMateriel(){
 
-  const [service, setService] = React.useState([]);
-  const [type, setType] = React.useState([]);
+  const [designation, setDesignation] = React.useState("");
+  const [famille, setFamille] = React.useState(null);
 
-  const [serviceError, setServiceError] = React.useState([false, ""]);
-  const [typeError, setTypeError] = React.useState([false, ""]);
+  const [designationError, setDesignationError] = React.useState([false, ""]);
+  const [familleError, setFamilleError] = React.useState([false, ""]);
 
   const [loadError, setLoadError ] = React.useState(false);
   const [response, setResponse] = React.useState("");
   const [responseSuccesSignal, setResponseSuccesSignal] = React.useState(false);
   const [responseErrorSignal, setResponseErrorSignal] = React.useState(false);
 
+
+  const [callBack, setCallBack] = React.useState("");
+
+  const [allFamille, setAllFamille] = React.useState([]);
+
   const [data, setData] = React.useState([]);
+  const [familleData, setFamilleData] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [openUpdate, setOpenUpdate] = React.useState(false);
@@ -68,38 +75,42 @@ export default function ServiceAffectation(){
   const [rowData, setRowData] = React.useState("");
   const [typeValue, setTypeValue] = React.useState();
 
-  const addServiceAffectationOpen = () =>{
+  const addTypeMaterialOpen = async () =>{
     setOpen(true);
-    setService("");
-    setType("")
-    setServiceError([false, ""]);
-    setTypeError([false, ""]);
+    setDesignation("");
+    setFamille(null)
+    setDesignationError([false, ""]);
+    setFamilleError([false, ""]);
+
+    setFamilleData(await getFamillesForSelection(token));
   }
 
-  const editServiceAffectationOpen = async () =>{
+  const editTypeMedicalOpen = async () =>{
      
     if(selectionModel.length == 0){
       setSelectionError(true);
     }else{    
       const token = localStorage.getItem("auth_token");
 
-      setRowData(await getSelectedServiceAffectation(token, selectionModel[0])); 
+      setRowData(await getSelectedMaterielType(token, selectionModel[0])); 
+
+      setFamilleData(await getFamillesForSelection(token));
     }
 
   }
 
-  const addServiceAffectationClose = () =>{
+  const addTypeMedicalClose = () =>{
 
     setOpen(false);
 
   }
 
-  const updateServiceAffectationClose = () =>{
+  const updateTypeMedicalClose = () =>{
     setOpenUpdate(false);
 
   }
 
-  const deleteServiceAffectationOpen = () =>{
+  const deleteTypeMedicalOpen = () =>{
     if(selectionModel.length == 0){
       setSelectionError(true);
     }else{   
@@ -108,25 +119,25 @@ export default function ServiceAffectation(){
 
   }
 
-  const deleteServiceAffectationClose = () =>{
+  const deleteTypeMedicalClose = () =>{
     setOpenDelete(false);
 
   }
 
-  const addServiceAffectationSave = async () =>{
+  const addTypeMedicalSave = async () =>{
   
     var test = true;
 
-    setServiceError([false, ""])
-    setTypeError([false, ""])
+    setDesignationError([false, ""])
+    setFamilleError([false, ""])
 
 
-    if (service == ""){
+    if (designation == ""){
       setServiceError([true,"Ce champ est obligatoire"])
       test = false;
     }
-    if (type == ""){
-      setTypeError([true,"Ce champ est obligatoire"])
+    if (famille == null){
+      setFamilleError([true,"Ce champ est obligatoire"])
       test = false;
     }
 
@@ -135,15 +146,13 @@ export default function ServiceAffectation(){
       setOpen(false);
 
       const data = {
-        service:service,
-        type:type,
+        designation:service,
+        famile_id:famille.id,
       }
-
-      console.log("data", JSON.stringify(data));
 
       const token = localStorage.getItem("auth_token");
 
-      setResponse(await createServiceAffectation(token, JSON.stringify(data))); 
+      setResponse(await createMaterialType(token, JSON.stringify(data))); 
       
     }
     else{
@@ -154,7 +163,7 @@ export default function ServiceAffectation(){
 
   }
 
-  const updateServiceAffectationSave = async () =>{
+  const updateTypeMaterialSave = async () =>{
 
     var test = true;
 
@@ -264,19 +273,19 @@ export default function ServiceAffectation(){
 
   }, [response]);
 
-
-
-  const change_type = (event) => {
-    if(event.target.value == ""){
-      setType("");
-    }else if(event.target.value == 1){
-      setType("interne");
-    }else if(event.target.value == 2){
-      setType("externe");
-    }else if(event.target.value == 3){
-      setType("speciale");
+  React.useEffect(() =>{
+    try{
+      if (familleData == "no data"){
+        setResponseErrorSignal(true);
+      } else if(familleData != "") {
+        setAllFamille(familleData);
+      }
+    }catch(e){
+      console.log(e);
     }
-  }
+  }, [familleData]);
+
+
 
   return(
     <React.Fragment>

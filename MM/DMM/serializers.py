@@ -50,10 +50,8 @@ class FamilleListSerializer(serializers.ModelSerializer):
         fields = ['id', 'label']
 
 
-
-
 class MaterielTypeSerializer(serializers.ModelSerializer):
-
+    famille = FamilleSerializer()
     class Meta:
         model = MaterielType
         fields = ['id', 'designation', 'famille']
@@ -68,7 +66,6 @@ class MaterielTypeListSerializer(serializers.ModelSerializer):
 
 
 class MaterielSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Materiel
         fields = ['id', 'materiel_type', 'marque', 'date_acquisition', 'fournisseur', 'service_affectation', 'state', 'num_inv']
