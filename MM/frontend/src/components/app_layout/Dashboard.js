@@ -48,6 +48,7 @@ import Dashboard_details from './Dashboard-details';
 import Fournisseur from './Fournisseur';
 import ServiceAffectation from './ServiceAffectaion';
 import Famille from './Famille';
+import TypeMateriel from './TypeMateriel';
 
 
 
@@ -374,7 +375,7 @@ function DashboardContent() {
         {page[4] ? <Dashboard_details/> : null}
         {page[5] ? <Dashboard_details/> : null}
         {page[6] ? <Famille/> : null}
-        {page[7] ? <Dashboard_details/> : null}
+        {page[7] ? <TypeMateriel/> : null}
         {page[8] ? <Fournisseur/> : null}
         {page[9] ? <ServiceAffectation/> : null}
         {page[10] ? <Dashboard_details/> : null}

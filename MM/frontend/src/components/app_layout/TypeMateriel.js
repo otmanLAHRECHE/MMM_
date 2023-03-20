@@ -24,6 +24,7 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import Container from '@mui/material/Container';
+import Autocomplete from '@mui/material/Autocomplete';
 
 import Grid from '@mui/material/Grid';
 import Alt from '../layouts/alert';
@@ -73,7 +74,6 @@ export default function TypeMateriel(){
   const [selectionModel, setSelectionModel] = React.useState([]);
   const [selectionError, setSelectionError] = React.useState(false);
   const [rowData, setRowData] = React.useState("");
-  const [typeValue, setTypeValue] = React.useState();
 
   const addTypeMaterialOpen = async () =>{
     setOpen(true);
@@ -81,6 +81,8 @@ export default function TypeMateriel(){
     setFamille(null)
     setDesignationError([false, ""]);
     setFamilleError([false, ""]);
+
+    const token = localStorage.getItem("auth_token");
 
     setFamilleData(await getFamillesForSelection(token));
   }
@@ -133,7 +135,7 @@ export default function TypeMateriel(){
 
 
     if (designation == ""){
-      setServiceError([true,"Ce champ est obligatoire"])
+      setDesignationError([true,"Ce champ est obligatoire"])
       test = false;
     }
     if (famille == null){
@@ -146,7 +148,7 @@ export default function TypeMateriel(){
       setOpen(false);
 
       const data = {
-        designation:service,
+        designation:designation,
         famile_id:famille.id,
       }
 
@@ -167,16 +169,16 @@ export default function TypeMateriel(){
 
     var test = true;
 
-    setServiceError([false, ""]);
-    setTypeError([false, ""]);
+    setDesignationError([false, ""]);
+    setFamilleError([false, ""]);
 
 
-    if (service == ""){
-      setServiceError([true,"Ce champ est obligatoire"])
+    if (designation == ""){
+      setDesignationError([true,"Ce champ est obligatoire"])
       test = false;
     }
-    if (type == ""){
-      setTypeError([true,"Ce champ est obligatoire"])
+    if (famille == null || famille == ""){
+      setFamilleError([true,"Ce champ est obligatoire"])
       test = false;
     }
 
@@ -184,8 +186,8 @@ export default function TypeMateriel(){
       setOpen(false);
 
       const data = {
-        service:service,
-        type:type,
+        designation:designation,
+        famile_id:famille.id,
       }
 
       console.log("data", JSON.stringify(data));
@@ -193,7 +195,7 @@ export default function TypeMateriel(){
 
       const token = localStorage.getItem("auth_token");
 
-      setResponse(await updateServiceAffectation(token, JSON.stringify(data), rowData.id)); 
+      setResponse(await updateMaterialType(token, JSON.stringify(data), rowData.id)); 
 
       setOpenUpdate(false);
       
@@ -210,7 +212,7 @@ export default function TypeMateriel(){
 
       setOpenDelete(false);
       const token = localStorage.getItem("auth_token");
-      setResponse(await deleteServiceAffectation(token, selectionModel[0])); 
+      setResponse(await deleteMaterialType(token, selectionModel[0])); 
         
   }
 
@@ -223,18 +225,12 @@ export default function TypeMateriel(){
 
       setOpenUpdate(true);
 
-      setService(rowData.service);
+      setDesignation(rowData.designation);
 
-      if(rowData.type == "interne"){
-        setTypeValue(1)
-      }else if(rowData.type == "externe"){
-        setTypeValue(2)
-      }else if(rowData.type == "speciale"){
-        setTypeValue(3)
-      }
+      setFamille({"id":rowData.famille.id, "label":rowData.famille.famille_name});
 
-      setServiceError([false, ""]);
-      setTypeError([false, ""]);
+      setDesignationError([false, ""]);
+      setFamilleError([false, ""]);
 
       }
     }catch(e){
@@ -262,7 +258,7 @@ export default function TypeMateriel(){
       const fetchData = async () => {
         try {
           const token = localStorage.getItem("auth_token");
-          setData(await getAllServiceAffectation(token));
+          setData(await getMaterielType(token));
           setLoading(false);
         } catch (error) {
           console.log("error", error);
@@ -322,27 +318,27 @@ export default function TypeMateriel(){
             aria-labelledby="nested-list-subheader"
             subheader={
                 <ListSubheader component="div" id="nested-list-subheader">
-                Manager les services d'affectation
+                Manager les types des materiels
                 </ListSubheader>
             }
             >
-            <ListItemButton onClick={addServiceAffectationOpen}>
+            <ListItemButton onClick={addTypeMaterialOpen}>
                 <ListItemIcon>
                 <AddIcon />
                 </ListItemIcon>
-                <ListItemText primary="Ajouter service" />
+                <ListItemText primary="Ajouter type" />
             </ListItemButton>
-            <ListItemButton onClick={editServiceAffectationOpen}>
+            <ListItemButton onClick={editTypeMedicalOpen}>
                 <ListItemIcon>
                 <EditIcon />
                 </ListItemIcon>
-                <ListItemText primary="Modifier service" />
+                <ListItemText primary="Modifier type" />
             </ListItemButton>
-            <ListItemButton onClick={deleteServiceAffectationOpen}>
+            <ListItemButton onClick={deleteTypeMedicalOpen}>
                 <ListItemIcon>
                 <DeleteForeverIcon />
                 </ListItemIcon>
-                <ListItemText primary="Supprimer service" />
+                <ListItemText primary="Supprimer type" />
             </ListItemButton>
             </List>
 
@@ -350,85 +346,72 @@ export default function TypeMateriel(){
     </Grid>  
 
 
-    <Dialog open={open} onClose={addServiceAffectationClose}  maxWidth="md" fullWidth={true}>
-        <DialogTitle>Ajouter service d'affectation</DialogTitle>
+    <Dialog open={open} onClose={addTypeMedicalClose}  maxWidth="md" fullWidth={true}>
+        <DialogTitle>Ajouter un type de materiel</DialogTitle>
             <DialogContent>
                 <TextField
-                error={serviceError[0]}
-                helperText={serviceError[1]}
+                error={designationError[0]}
+                helperText={designationError[1]}
                 required
                 margin="dense"
-                name="service_name"
-                id="service_name"
-                label="Nom de service"
+                name="designation"
+                id="designation"
+                label="Designation"
                 fullWidth
                 variant="standard"
-                onChange={(event) => {setService(event.target.value)}}
+                onChange={(event) => {setDesignation(event.target.value)}}
                 />
-                <FormControl variant="standard" sx={{ m: 1, width: 300 }}>
-                                  <InputLabel required htmlFor="grouped-select"
-                                  error={typeError[0]}
-                                  helperText={typeError[1]}>Type de service</InputLabel>
-                                    <Select defaultValue="" id="grouped-select" label="Type de service"
-                                    onChange={change_type}>
-                                      <MenuItem value="">
-                                        <em>None</em>
-                                      </MenuItem>
-                                      <MenuItem value={1}>interne</MenuItem>
-                                      <MenuItem value={2}>externe</MenuItem>
-                                      <MenuItem value={3}>speciale</MenuItem>
-                                     
-                                    </Select>
-                    </FormControl>  
+                
+                <Autocomplete
+                          disablePortal
+                          value={famille}
+                          onChange={(event, newVlue) =>{
+                                    setFamille(newVlue);
+                                     }}
+                          options={allFamille}
+                          renderInput={(params) => <TextField {...params} error={familleError[0]}
+                          helperText={familleError[1]} fullWidth variant="standard" label="Famille de materiel" 
+                          required/>}/>                 
             </DialogContent>
             <DialogActions>
-                <Button onClick={addServiceAffectationClose}>Anuller</Button>
-                <Button onClick={addServiceAffectationSave}>Sauvgarder</Button>
+                <Button onClick={addTypeMedicalClose}>Anuller</Button>
+                <Button onClick={addTypeMedicalSave}>Sauvgarder</Button>
             </DialogActions>
     </Dialog>
 
 
-    <Dialog open={openUpdate} onClose={updateServiceAffectationClose}  maxWidth="md" fullWidth={true}>
-        <DialogTitle>Modifier un service d'affectation</DialogTitle>
+    <Dialog open={openUpdate} onClose={updateTypeMedicalClose}  maxWidth="md" fullWidth={true}>
+        <DialogTitle>Modifier un type de materiel</DialogTitle>
             <DialogContent>
                 <TextField
-                error={serviceError[0]}
-                helperText={serviceError[1]}
+                error={designationError[0]}
+                helperText={designationError[1]}
                 required
                 margin="dense"
-                name="service_name"
-                id="service_name"
-                label="Nom de service"
+                name="designation"
+                id="designation"
+                label="Designation"
                 fullWidth
                 variant="standard"
-                value={service}
-                onChange={(event) => {setService(event.target.value)}}
+                value={designation}
+                onChange={(event) => {setDesignation(event.target.value)}}
                 />
 
-                <FormControl variant="standard" sx={{ m: 1, width: 300 }}>
-                                  <InputLabel required htmlFor="grouped-select"
-                                  error={typeError[0]}
-                                  helperText={typeError[1]}>Type de service</InputLabel>
-                                    <Select defaultValue="" id="grouped-select" label="Type de service"
-                                    onChange={change_type}
-                                    value={typeValue}>
-                                      <MenuItem value="">
-                                        <em>None</em>
-                                      </MenuItem>
-                                      <MenuItem value={1}>interne</MenuItem>
-                                      <MenuItem value={2}>externe</MenuItem>
-                                      <MenuItem value={3}>speciale</MenuItem>
-                                     
-                                    </Select>
-                    </FormControl>  
-                
-                
-                
-                
+                  <Autocomplete
+                          disablePortal
+                          value={famille}
+                          onChange={(event, newVlue) =>{
+                                    setFamille(newVlue);
+                                     }}
+                          options={allFamille}
+                          renderInput={(params) => <TextField {...params} error={familleError[0]}
+                          helperText={familleError[1]} fullWidth variant="standard" label="Famille de materiel" 
+                          required/>}/> 
+
             </DialogContent>
             <DialogActions>
-            <Button onClick={updateServiceAffectationClose}>Anuller</Button>
-                <Button onClick={updateServiceAffectationSave}>Sauvgarder</Button>
+            <Button onClick={updateTypeMedicalClose}>Anuller</Button>
+                <Button onClick={updateTypeMaterialSave}>Sauvgarder</Button>
             </DialogActions>
     </Dialog>
 
@@ -436,17 +419,17 @@ export default function TypeMateriel(){
     <Dialog open={openDelete}
                     TransitionComponent={Transition}
                     keepMounted
-                    onClose={deleteServiceAffectationClose}
+                    onClose={deleteTypeMedicalClose}
                     aria-describedby="alert-dialog-slide-description"
                 >
-                    <DialogTitle>{"Confirmer la suppression d'un service"}</DialogTitle>
+                    <DialogTitle>{"Confirmer la suppression d'un type"}</DialogTitle>
                     <DialogContent>
                     <DialogContentText id="alert-dialog-slide-description">
-                    Êtes-vous sûr de la décision de supprimer le service ?
+                    Êtes-vous sûr de la décision de supprimer le type ?
                     </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                    <Button onClick={deleteServiceAffectationClose}>Anuller</Button>
+                    <Button onClick={deleteTypeMedicalClose}>Anuller</Button>
                     <Button onClick={deleteConfirmation}>Supprimer</Button>
                     </DialogActions>
     </Dialog>
@@ -457,7 +440,7 @@ export default function TypeMateriel(){
     {loadError ? <Alt type='error' message='Des erruers sur les données' onClose={()=> setLoadError(false)}/> : null}
     {responseSuccesSignal ? <Alt type='success' message='Opération réussie' onClose={()=> setResponseSuccesSignal(false)}/> : null}
     {responseErrorSignal ? <Alt type='error' message='Opération a échoué' onClose={()=> setResponseErrorSignal(false)}/> : null}
-    {selectionError ? <Alt type='warning' message='Selectioner un service' onClose={()=> setSelectionError(false)} /> : null}
+    {selectionError ? <Alt type='warning' message='Selectioner un type' onClose={()=> setSelectionError(false)} /> : null}
 
 
     </React.Fragment>
