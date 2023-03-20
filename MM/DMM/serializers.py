@@ -66,6 +66,9 @@ class MaterielTypeListSerializer(serializers.ModelSerializer):
 
 
 class MaterielSerializer(serializers.ModelSerializer):
+    materiel_type = MaterielTypeSerializer()
+    fournisseur = FournisseurSerializer()
+    service_affectation = ServiceAffectation()
     class Meta:
         model = Materiel
         fields = ['id', 'materiel_type', 'marque', 'date_acquisition', 'fournisseur', 'service_affectation', 'state', 'num_inv']
