@@ -36,11 +36,11 @@ import Container from '@mui/material/Container';
 import Alt from '../layouts/alert';
 
 import SortieItemsTable from '../layouts/sortie_items_table';
-import { getAllDestinataireForSelect } from '../../actions/fournisseur_source_data';
-import { getAllArrivageOfMedic, getAllMedicNames } from '../../actions/medicament_data';
-import { getSelectedStock } from '../../actions/stock_data';
+import { getMaterielTypeForSelection } from '../../actions/materialTypeAPI';
+import { getServiceAffectationForSelection } from '../../actions/service_affectation_API';
+import { getFournisseurForSelection } from '../../actions/fournisseurAPI';
 import { internal_processStyles } from '@mui/styled-engine';
-import { addBonSortieItem, checkBonSortieId,  deleteBonSortieItem,  getAllBonSortieItems, getSelectedBonSortieItem, updateBonSortieItem } from '../../actions/bon_sortie_data';
+import { getMateriels, getSelectedMateriels, createMaterial, updateMaterial, deleteMaterial} from '../../actions/materialsAPI';
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -67,7 +67,23 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 
   export default function Materials(){
-    
+
+    const [materialType, setMaterialType] = React.useState(null);
+    const [marque, setMarque] = React.useState("");
+    const [dateAcquisition, setDateAcquisition] = React.useState("");
+    const [fournisseur, setFournisseur] = React.useState(null);
+    const [serviceAffectation, setServiceAffectation] = React.useState(null);
+    const [numInventaire, setNumInventaire] = React.useState("");
+
+    const [materialTypeError, setMaterialTypeError] = React.useState([false, ""]);
+    const [marqueError, setMarqueError] = React.useState([false, ""]);
+    const [dateAcquisitionError, setDateAcquisitionError] = React.useState([false, ""]);
+    const [fournisseurError, setFournisseurError] = React.useState([false, ""]);
+    const [serviceAffectationError, setServiceAffectationError] = React.useState([false, ""]);
+    const [numInventaireError, setNumInventaireError] = React.useState([false, ""]);
+
+
+
 
 
 
