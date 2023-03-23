@@ -32,7 +32,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Typography from '@mui/material/Typography';
 
 import Container from '@mui/material/Container';
-
+import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
 import Alt from '../layouts/alert';
 
 import SortieItemsTable from '../layouts/sortie_items_table';
@@ -83,9 +83,299 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     const [numInventaireError, setNumInventaireError] = React.useState([false, ""]);
 
 
+    const [loadError, setLoadError ] = React.useState(false);
+    const [response, setResponse] = React.useState("");
+    const [responseSuccesSignal, setResponseSuccesSignal] = React.useState(false);
+    const [responseErrorSignal, setResponseErrorSignal] = React.useState(false);
+
+    const [allMaterialTypes, setAllMaterialTypes] = React.useState([]);
+    const [allFournisseur, setAllFournisseur] = React.useState([]);
+    const [allServiceAffectation, setAllServiceAffectation] = React.useState([]);
+
+    const [data, setData] = React.useState([]);
+    const [namesData, setNamesData] = React.useState([]);
+    const [sourceData, setSourceData] = React.useState([]);
+    const [arrivageData, setArrivageData] = React.useState([]);
+    const [loading, setLoading] = React.useState(false);
+    const [open, setOpen] = React.useState(false);
+    const [openUpdate, setOpenUpdate] = React.useState(false);
+    const [openDelete, setOpenDelete] = React.useState(false);
+    const [selectionModel, setSelectionModel] = React.useState([]);
+    const [selectionError, setSelectionError] = React.useState(false);
+    const [rowData, setRowData] = React.useState("");
+    const [loadingSortieItem, setLoadingSortieItem] = React.useState(false);
+
+    const [dataError, setDataError] = React.useState(false);
 
 
+    return(
 
+        <React.Fragment>
+            <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+          <Grid container spacing={2}>
+
+
+            <Grid item xs={12}>
+
+            <Box
+                  sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      '& > *': {
+                      m: 1,
+                      },
+                  }}
+              >
+              <ButtonGroup variant="text" aria-label="outlined primary button group">
+                <Button startIcon={<AddCircleOutlineIcon />} onClick={addBonSortieItemOpen}>Ajouter materiel</Button>
+                <Button startIcon={<EditAttributesIcon />} onClick={editBonSortieItemOpen}>Modifier materiel</Button>
+                <Button startIcon={<DeleteForeverIcon />} onClick={deleteBonSortieItemOpen}>Supprimer materiel</Button>
+                <Button startIcon={<PublishedWithChangesIcon />} onClick={deleteBonSortieItemOpen}>Changer l'état de materiel</Button>
+              </ButtonGroup>
+            </Box>
+              
+            </Grid>
+
+            <Grid item xs={12}>
+              <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
+              <div style={{ height: 700, width: '100%' }}>
+                        <DataGrid
+                          components={{
+                            Toolbar: GridToolbar,
+                          }}
+                            rows={data}
+                            columns={columns}
+                            pageSize={15}
+                            checkboxSelection = {false}
+                            loading={loading}
+                            disableMultipleSelection={true}
+                            onSelectionModelChange={(newSelectionModel) => {
+                              setSelectionModel(newSelectionModel);
+                            }}
+                            selectionModel={selectionModel}
+                            
+                            
+                        />
+                  </div>   
+              </Paper>
+            </Grid>
+          </Grid>
+          <Copyright sx={{ pt: 4 }} />
+
+          <Dialog open={open} onClose={addBonSortieClose}  maxWidth="lg" fullWidth={true}>
+                <DialogTitle>Ajouter un Materiel</DialogTitle>
+                  <DialogContent>
+                    <Grid container spacing={2}>
+                                      <Grid item xs={4}>
+                                        <TextField
+                                                error={idBonSortieError[0]}
+                                                helperText={idBonSortieError[1]}
+                                                margin="dense"
+                                                id="bon_sortie_nbr"
+                                                label="Id de bon sortie"
+                                                fullWidth
+                                                variant="standard"
+                                                type="number"
+                                                onChange={(event) => {setIdBonSortie(event.target.value)}}
+                                        />
+
+                                      </Grid>
+                                      <Grid item xs={4}>
+                                            <Autocomplete
+                                                disablePortal
+                                                value={medicName}
+                                                onChange={async (event, newVlue) =>{
+                                                    setMedicName(newVlue);
+
+                                                    if (newVlue != null){
+                                                        const token = localStorage.getItem("auth_token");
+                                                        setArrivageData(await getAllArrivageOfMedic(token, newVlue.id));
+                                                    }else{
+                                                        setAllArivage([]);
+                                                    }                                                                                                
+                                                }}
+                                                id="combo-box-demo"
+                                                options={allNames}
+                                                renderInput={(params) => <TextField {...params} error={medicNameError[0]}
+                                                helperText={medicNameError[1]} fullWidth variant="standard" label="Médicaments" 
+                                                required/>}
+                                            /> 
+                                      
+                                      </Grid>
+
+                                      <Grid item xs={4}>
+                                                <Autocomplete
+                                                            disablePortal
+                                                            id="combo-box-demo"
+                                                            value={arivage}
+                                                            onChange={async (event, newVlue) =>{
+                                                                setArivage(newVlue);
+
+                                                                if(newVlue == null){
+                                                                    console.log("arrivage...",newVlue);
+
+                                                                }else{
+                                                                    const token = localStorage.getItem("auth_token");
+                                                                    setCurrentStockItem(await getSelectedStock(token, newVlue.id));
+
+                                                                }                                                                
+
+                                                            }}
+                                                            options={allArivage}
+                                                            renderInput={(params) => <TextField {...params} error={arivageError[0]}
+                                                            helperText={arivageError[1]} fullWidth variant="standard" label="Arrivage" 
+                                                            required/>}
+                                                        />                                                                                      
+                                      </Grid>
+
+                                      <Grid item xs={6}>
+                                            <TextField
+                                                error={qntError[0]}
+                                                helperText={qntError[1]}
+                                                required
+                                                margin="dense"
+                                                label="Qnt"
+                                                fullWidth
+                                                variant="standard"
+                                                value = {qnt}
+                                                onChange={(event) => {setQnt(event.target.value)}}
+                                            />
+
+                                      </Grid>                
+                    </Grid>
+                  </DialogContent>
+                            <DialogActions>
+                              <Button onClick={addBonSortieClose}>Anuller</Button>
+                              <Button onClick={addBonSortieSave}>Sauvgarder</Button>
+                            </DialogActions>   
+
+                  
+          </Dialog>
+
+          <Dialog open={openUpdate} onClose={editBonSortieItemClose}  maxWidth="lg" fullWidth={true}>
+          <DialogTitle>Ajouter un bon de sortie item</DialogTitle>
+                  <DialogContent>
+                    <Grid container spacing={2}>
+                                      <Grid item xs={4}>
+                                        <TextField
+                                                error={idBonSortieError[0]}
+                                                helperText={idBonSortieError[1]}
+                                                disabled={true}
+                                                margin="dense"
+                                                id="bon_sortie_nbr"
+                                                label="Id de bon sortie"
+                                                fullWidth
+                                                variant="standard"
+                                                type="number"
+                                                onChange={(event) => {setIdBonSortie(event.target.value)}}
+                                        />
+
+                                      </Grid>
+                                      <Grid item xs={4}>
+                                            <Autocomplete
+                                                disablePortal
+                                                value={medicName}
+                                                disabled={true}
+                                                onChange={async (event, newVlue) =>{
+                                                    setMedicName(newVlue);
+
+                                                    if (newVlue != null){
+                                                        const token = localStorage.getItem("auth_token");
+                                                        setArrivageData(await getAllArrivageOfMedic(token, newVlue.id));
+                                                    }else{
+                                                        setAllArivage([]);
+                                                    }                                                                                                
+                                                }}
+                                                id="combo-box-demo"
+                                                options={allNames}
+                                                renderInput={(params) => <TextField {...params} error={medicNameError[0]}
+                                                helperText={medicNameError[1]} fullWidth variant="standard" label="Médicaments" 
+                                                required/>}
+                                            /> 
+                                      
+                                      </Grid>
+
+                                      <Grid item xs={4}>
+                                                <Autocomplete
+                                                            disablePortal
+                                                            id="combo-box-demo"
+                                                            value={arivage}
+                                                            disabled={true}
+                                                            onChange={async (event, newVlue) =>{
+                                                                setArivage(newVlue);
+
+                                                                if(newVlue == null){
+                                                                    console.log("arrivage...",newVlue);
+
+                                                                }else{
+                                                                    const token = localStorage.getItem("auth_token");
+                                                                    setCurrentStockItem(await getSelectedStock(token, newVlue.id));
+
+                                                                }                                                                
+
+                                                            }}
+                                                            options={allArivage}
+                                                            renderInput={(params) => <TextField {...params} error={arivageError[0]}
+                                                            helperText={arivageError[1]} fullWidth variant="standard" label="Arrivage" 
+                                                            required/>}
+                                                        />                                                                                      
+                                      </Grid>
+
+                                      <Grid item xs={6}>
+                                            <TextField
+                                                error={qntError[0]}
+                                                helperText={qntError[1]}
+                                                required
+                                                margin="dense"
+                                                label="Qnt"
+                                                fullWidth
+                                                variant="standard"
+                                                value = {qnt}
+                                                onChange={(event) => {setQnt(event.target.value)}}
+                                            />
+
+                                      </Grid>                
+                    </Grid>
+                  </DialogContent>
+                            <DialogActions>
+                              <Button onClick={editBonSortieItemClose}>Anuller</Button>
+                              <Button onClick={editBonSortieItemSave}>Sauvgarder</Button>
+                            </DialogActions> 
+
+                  
+          </Dialog>
+
+          <Dialog open={openDelete}
+                                  TransitionComponent={Transition}
+                                  keepMounted
+                                  onClose={deleteBonSortieItemClose}
+                                  aria-describedby="alert-dialog-slide-description"
+                                >
+                                  <DialogTitle>{"Confirmer la suppression d'un bon de sortie Item"}</DialogTitle>
+                                  <DialogContent>
+                                    <DialogContentText id="alert-dialog-slide-description">
+                                    Êtes-vous sûr de la décision de supprimer le bon de sortie item, la quantite de médicament sortie sur ce item sera annuler et l'etat de stock reviens a etat prévédente?
+                                    </DialogContentText>
+                                  </DialogContent>
+                                  <DialogActions>
+                                    <Button onClick={deleteBonSortieItemClose}>Anuller</Button>
+                                    <Button onClick={deleteConfirmation}>Supprimer</Button>
+                                  </DialogActions>
+           </Dialog>
+          
+        </Container>
+
+
+          {loadError ? <Alt type='error' message='Des erruers sur les données' onClose={()=> setLoadError(false)}/> : null}
+          {responseSuccesSignal ? <Alt type='success' message='Opération réussie' onClose={()=> setResponseSuccesSignal(false)}/> : null}
+          {responseErrorSignal ? <Alt type='error' message='Opération a échoué' onClose={()=> setResponseErrorSignal(false)}/> : null}
+          {selectionError ? <Alt type='error' message='Selectioner un materiel' onClose={()=> setSelectionError(false)} /> : null}
+          
+          
+        </React.Fragment>
+
+    );
 
 
 
