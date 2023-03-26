@@ -93,9 +93,9 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     const [allServiceAffectation, setAllServiceAffectation] = React.useState([]);
 
     const [data, setData] = React.useState([]);
-    const [namesData, setNamesData] = React.useState([]);
-    const [sourceData, setSourceData] = React.useState([]);
-    const [arrivageData, setArrivageData] = React.useState([]);
+    const [fournisseurData, setFournisseurData] = React.useState([]);
+    const [serviceAffectationData, setServiceAffectationData] = React.useState([]);
+    const [materialTypeData, setMaterialTypeData] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
     const [open, setOpen] = React.useState(false);
     const [openUpdate, setOpenUpdate] = React.useState(false);
@@ -106,6 +106,117 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     const [loadingSortieItem, setLoadingSortieItem] = React.useState(false);
 
     const [dataError, setDataError] = React.useState(false);
+
+
+    const addMaterialOpen = async () =>{
+
+        setMaterialType(null);
+        setMarque("");
+        setDateAcquisition("");
+        setServiceAffectation(null);
+        setFournisseur(null);
+        setNumInventaire("");
+
+        
+        setMaterialTypeError([false, ""]);
+        setMarqueError([false, ""]);
+        setDateAcquisitionError([false, ""]);
+        setServiceAffectationError([false, ""]);
+        setFournisseurError([false, ""]);
+        setNumInventaireError([false, ""]);
+
+        const token = localStorage.getItem("auth_token");
+        setFournisseurData(await getFournisseurForSelection(token));
+        setMaterialTypeData(await getMaterielTypeForSelection(token));
+        setServiceAffectationData(await getServiceAffectationForSelection(token));
+
+    }
+
+    const addMaterialClose = () =>{
+      setOpen(false);
+    }
+
+    const addMaterialSave = async () =>{
+
+      var test = true;
+
+      if(materialType == null || materialType == ""){
+          test = false;
+          setMaterialTypeError([true, "ce champ est obligatoire"])
+      }
+
+      if(marque == null || marque == ""){
+        test = false;
+        setMarqueError([true, "ce champ est obligatoire"])
+      }
+
+      if(marque == null || marque == ""){
+        test = false;
+        setMarqueError([true, "ce champ est obligatoire"])
+      }
+
+
+
+      
+
+      if (test){
+
+          if (Number(currentStockItem.stock_qte)< Number(qnt)){
+              setSortieQntError(true);
+          }else{
+              const token = localStorage.getItem("auth_token");
+              setIdChecker(await checkBonSortieId(token, Number(idBonSortie)));
+          }
+
+          
+
+      }
+  }
+
+    
+
+
+    React.useEffect(()=>{
+      try{
+        if (fournisseurData == "no data"){
+          setResponseErrorSignal(true);
+        } else if(fournisseurData != "") {
+          setAllFournisseur(fournisseurData);
+          setOpen(true);
+        }
+      }catch(e){
+        console.log(e);
+      }
+
+    },[fournisseurData]);
+
+    React.useEffect(()=>{
+      try{
+        if (serviceAffectationData == "no data"){
+          setResponseErrorSignal(true);
+        } else if(serviceAffectationData != "") {
+          setAllServiceAffectation(serviceAffectationData);
+          setOpen(true);
+        }
+      }catch(e){
+        console.log(e);
+      }
+
+    },[serviceAffectationData]);
+
+    React.useEffect(()=>{
+      try{
+        if (materialTypeData == "no data"){
+          setResponseErrorSignal(true);
+        } else if(materialTypeData != "") {
+          setAllMaterialTypes(materialTypeData);
+          setOpen(true);
+        }
+      }catch(e){
+        console.log(e);
+      }
+
+    },[materialTypeData]);
 
 
     return(
@@ -131,7 +242,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
                 <Button startIcon={<AddCircleOutlineIcon />} onClick={addBonSortieItemOpen}>Ajouter materiel</Button>
                 <Button startIcon={<EditAttributesIcon />} onClick={editBonSortieItemOpen}>Modifier materiel</Button>
                 <Button startIcon={<DeleteForeverIcon />} onClick={deleteBonSortieItemOpen}>Supprimer materiel</Button>
-                <Button startIcon={<PublishedWithChangesIcon />} onClick={deleteBonSortieItemOpen}>Changer l'état de materiel</Button>
               </ButtonGroup>
             </Box>
               
